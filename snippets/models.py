@@ -41,7 +41,7 @@ class Snippet(models.Model):
     )
 
     # to store the highlighted HTML representation of the code snippet
-    highlight = models.TextField()
+    highlighted = models.TextField()
 
     def save(self, *args, **kwargs):
         """
@@ -58,8 +58,9 @@ class Snippet(models.Model):
         formatter = HtmlFormatter(
             style=self.style, linenos=linenos, full=True, **options
         )
-        # highlight the code and save it to the highlight field
+        # highlight the code and save it to the highlighted field
         self.highlighted = highlight(self.code, lexer, formatter)
+        # call the parent class's save method to save the model instance
         super().save(*args, **kwargs)
 
     class Meta:
