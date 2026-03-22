@@ -1,6 +1,8 @@
 from django.db import models
-from pygments.lexers import get_all_lexers
+from pygments.lexers import get_all_lexers, get_lexer_by_name
 from pygments.styles import get_all_styles
+from pygments.formatters.html import HtmlFormatter
+from pygments import highlight
 
 # Get the list of all lexers and styles from Pygments and create choices for the language and style fields in the Snippet model
 LEXERS = [
@@ -21,15 +23,44 @@ class Snippet(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     title = models.CharField(max_length=100, blank=True, default="")
     code = models.TextField()
-    linenos = models.BooleanField(
-        default=False
-    )  # whether to display line numbers or not
+
+    # whether to display line numbers or not
+    linenos = models.BooleanField(default=False)
+
+    # the language field will use the choices from LANGUAGE_CHOICES and default to 'python'
     language = models.CharField(
         choices=LANGUAGE_CHOICES, default="python", max_length=100
-    )  # the language field will use the choices from LANGUAGE_CHOICES and default to 'python'
-    style = models.CharField(
-        choices=STYLE_CHOICES, default="friendly", max_length=100
-    )  # the style field will use the choices from STYLE_CHOICES and default to 'friendly'
+    )
+
+    # the style field will use the choices from STYLE_CHOICES and default to 'friendly'
+    style = models.CharField(choices=STYLE_CHOICES, default="friendly", max_length=100)
+
+    # the owner field is a foreign key to the User model
+    owner = models.ForeignKey(
+        "auth.User", related_name="snippets", on_delete=models.CASCADE
+    )
+
+    # to store the highlighted HTML representation of the code snippet
+    highlight = models.TextField()
+
+    def save(self, *args, **kwargs):
+        """
+        Use the `pygments` library to create a highlighted HTML
+        representation of the code snippet.
+        """
+        # get the lexer for the specified language
+        lexer = get_lexer_by_name(self.language)
+        # determine the line numbers option based on the linenos field
+        linenos = "table" if self.linenos else False
+        # create the formatter with the specified style and line numbers option
+        options = {"title": self.title} if self.title else {}
+        # create the formatter for the highlighted code
+        formatter = HtmlFormatter(
+            style=self.style, linenos=linenos, full=True, **options
+        )
+        # highlight the code and save it to the highlight field
+        self.highlighted = highlight(self.code, lexer, formatter)
+        super().save(*args, **kwargs)
 
     class Meta:
         """
