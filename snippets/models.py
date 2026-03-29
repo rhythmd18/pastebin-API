@@ -53,11 +53,8 @@ class Snippet(models.Model):
         # determine the line numbers option based on the linenos field
         linenos = "table" if self.linenos else False
         # create the formatter with the specified style and line numbers option
-        options = {"title": self.title} if self.title else {}
         # create the formatter for the highlighted code
-        formatter = HtmlFormatter(
-            style=self.style, linenos=linenos, full=True, **options
-        )
+        formatter = HtmlFormatter(style=self.style, linenos=linenos)
         # highlight the code and save it to the highlighted field
         self.highlighted = highlight(self.code, lexer, formatter)
         # call the parent class's save method to save the model instance

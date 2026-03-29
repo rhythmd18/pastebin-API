@@ -4,29 +4,45 @@ from django.contrib.auth.models import User
 from .models import Snippet
 
 
-class SnippetSerializer(serializers.ModelSerializer):
+class SnippetSerializer(serializers.HyperlinkedModelSerializer):
     """Serializer for the Snippet model"""
 
-    # the owner field will be a read-only field 
+    # the owner field will be a read-only field
     # that displays the username of the owner of the snippet
     owner = serializers.ReadOnlyField(source="owner.username")
 
+    # the highlight field will be a hyperlinked identity field
+    # that allows us to see the highlighted version of the snippet
+    highlight = serializers.HyperlinkedIdentityField(
+        view_name="snippet-highlight", format="html"
+    )
+
     class Meta:
         model = Snippet
-        fields = ["id", "title", "code", "linenos", "language", "style", "owner"]
+        fields = [
+            "url",
+            "id",
+            "highlight",
+            "owner",
+            "title",
+            "code",
+            "linenos",
+            "language",
+            "style",
+        ]
 
 
-class UserSerializer(serializers.ModelSerializer):
+class UserSerializer(serializers.HyperlinkedModelSerializer):
     """
     Serializer for the User model.
     """
 
-    # the snippets field will be a primary key related field
-    # that allows us to see the snippets created by the user
-    snippets = serializers.PrimaryKeyRelatedField(
-        many=True, queryset=Snippet.objects.all()
+    # the snippets field will be a hyperlinked related field
+    # that allows us to see all the snippets created by the user
+    snippets = serializers.HyperlinkedRelatedField(
+        many=True, read_only=True, view_name="snippet-detail"
     )
 
     class Meta:
         model = User
-        fields = ["id", "username", "snippets"]
+        fields = ["url", "id", "username", "snippets"]
