@@ -38,12 +38,20 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "rest_framework",
+    "drf_spectacular",
     "snippets",
 ]
 
 REST_FRAMEWORK = {
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
     "PAGE_SIZE": 10,
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+}
+
+DRF_SPECTACULAR_SETTINGS = {
+    "TITLE": "Django REST Framework API",
+    "DESCRIPTION": "API documentation for the Django REST Framework project.",
+    "VERSION": "1.0.0",
 }
 
 MIDDLEWARE = [
