@@ -1,4 +1,4 @@
 Django==6.0.3
-djangorestframework
-Pygments
-requests
+djangorestframework==3.17.1
+Pygments==2.17.2
+requests==2.31.0
