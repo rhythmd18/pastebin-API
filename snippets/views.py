@@ -1,14 +1,38 @@
 from rest_framework import permissions
 from rest_framework import viewsets
-from rest_framework.decorators import action
+from rest_framework.decorators import action, api_view
 from rest_framework.request import Request
 from rest_framework.response import Response
+from rest_framework.reverse import reverse
 from rest_framework import renderers
+from drf_spectacular.utils import extend_schema
 from django.contrib.auth.models import User
 
 from .models import Snippet
-from .serializers import SnippetSerializer, UserSerializer
+from .serializers import APIRootSerializer, SnippetSerializer, UserSerializer
 from .permissions import IsOwnerOrReadOnly
+
+
+@extend_schema(responses=APIRootSerializer)
+@api_view(["GET"])
+def api_root(request: Request, format=None) -> Response:
+    """
+    The API's entry point, providing links to the user and snippet list views.
+    """
+    if request.user.is_authenticated:
+        return Response(
+            {
+                "snippets": reverse("snippet-list", request=request, format=format),
+                "users": reverse("user-list", request=request, format=format),
+                "logout": request.build_absolute_uri("/api/auth/logout/"),
+            }
+        )
+    return Response(
+        {
+            "login": request.build_absolute_uri("/api/auth/login/"),
+            "register": request.build_absolute_uri("/api/auth/registration/"),
+        }
+    )
 
 
 class SnippetViewSet(viewsets.ModelViewSet):
