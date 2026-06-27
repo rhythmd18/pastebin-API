@@ -3,6 +3,22 @@ info:
   title: ''
   version: 0.0.0
 paths:
+  /:
+    get:
+      operationId: root_retrieve
+      description: The API's entry point, providing links to the user and snippet
+        list views.
+      security:
+      - jwtHeaderAuth: []
+      - jwtCookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIRoot'
+          description: ''
   /api/auth/login/:
     post:
       operationId: api_auth_login_create
@@ -569,7 +585,6 @@ paths:
       security:
       - jwtHeaderAuth: []
       - jwtCookieAuth: []
-      - {}
       responses:
         '200':
           content:
@@ -628,7 +643,6 @@ paths:
       security:
       - jwtHeaderAuth: []
       - jwtCookieAuth: []
-      - {}
       responses:
         '200':
           content:
@@ -753,7 +767,6 @@ paths:
       security:
       - jwtHeaderAuth: []
       - jwtCookieAuth: []
-      - {}
       responses:
         '200':
           content:
@@ -777,7 +790,6 @@ paths:
       security:
       - jwtHeaderAuth: []
       - jwtCookieAuth: []
-      - {}
       responses:
         '200':
           content:
@@ -801,7 +813,6 @@ paths:
       security:
       - jwtHeaderAuth: []
       - jwtCookieAuth: []
-      - {}
       responses:
         '200':
           content:
@@ -811,6 +822,26 @@ paths:
           description: ''
 components:
   schemas:
+    APIRoot:
+      type: object
+      description: Serializer for the API root view, providing links to the user and
+        snippet list views.
+      properties:
+        snippets:
+          type: string
+          format: uri
+        users:
+          type: string
+          format: uri
+        logout:
+          type: string
+          format: uri
+        login:
+          type: string
+          format: uri
+        register:
+          type: string
+          format: uri
     JWT:
       type: object
       description: Serializer for JWT authentication.

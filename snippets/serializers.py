@@ -4,6 +4,18 @@ from django.contrib.auth.models import User
 from .models import Snippet
 
 
+class APIRootSerializer(serializers.Serializer):
+    """
+    Serializer for the API root view, providing links to the user and snippet list views.
+    """
+
+    snippets = serializers.URLField(required=False)
+    users = serializers.URLField(required=False)
+    logout = serializers.URLField(required=False)
+    login = serializers.URLField(required=False)
+    register = serializers.URLField(required=False)
+
+
 class SnippetSerializer(serializers.HyperlinkedModelSerializer):
     """Serializer for the Snippet model"""
 
